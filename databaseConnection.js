@@ -20,7 +20,7 @@ const dbConfigLocal = {
 	namedPlaceholders: true
 };
 
-if (is_heroku == 1) {
+if (IS_HEROKU == 1) {
 	var database = mysql.createPool(dbConfigHeroku);
 }
 else {
