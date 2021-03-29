@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 
-const IS_HEROKU = process.env.IS_HEROKU || false;
+const is_heroku = process.env.IS_HEROKU || false;
 
 const dbConfigHeroku = {
 	host: "us-cdbr-east-03.cleardb.com",
@@ -20,7 +20,7 @@ const dbConfigLocal = {
 	namedPlaceholders: true
 };
 
-if (IS_HEROKU) {
+if (is_heroku) {
 	var database = mysql.createPool(dbConfigHeroku);
 }
 else {
