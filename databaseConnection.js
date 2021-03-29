@@ -4,9 +4,9 @@ const is_heroku = process.env.IS_HEROKU || false;
 
 const dbConfigHeroku = {
 	host: "us-cdbr-east-03.cleardb.com",
-	user: "b1ab7fb2ee03bc",
-	password: "2a484a2d",
-	database: "heroku_3d208ad4bd6f421",
+	user: "b8e7b31edd7f27",
+	password: "9ff289e0",
+	database: "heroku_25bb62d56225ffe",
 	multipleStatements: false,
 	namedPlaceholders: true
 };
@@ -20,7 +20,7 @@ const dbConfigLocal = {
 	namedPlaceholders: true
 };
 
-if (is_heroku) {
+if (is_heroku == 1) {
 	var database = mysql.createPool(dbConfigHeroku);
 }
 else {
