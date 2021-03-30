@@ -3,6 +3,7 @@ const router = require('express').Router();
 //const dbModel = include('databaseAccessLayer');
 //const dbModel = include('staticData');
 const userModel = include('models/web_user');
+const petModel = include('models/pet');
 
 
 
@@ -147,6 +148,52 @@ router.get('/', async (req, res) => {
 		}
 		});
 
+		router.get('/pets', async (req, res) => {
+			console.log("page hit");
+			try {
+			const pets = await petModel.findAll({attributes: ['pet_id','web_user_id','name','pet_type_id']}); //{where: {web_user_id: 1}}
+			if (pets === null) {
+			res.render('error', {message: 'Error connecting to MySQL'});
+			console.log("Error connecting to userModel");
+			}
+			else {
+			console.log(pets);
+			res.render('pets', {allPets: pets});
+			}
+			}
+			catch(ex) {
+			res.render('error', {message: 'Error connecting to MySQL'});
+			console.log("Error connecting to MySQL");
+			console.log(ex);
+			}
+			});
+		
+			router.post('/addUser', async (req, res) => {
+				try {
+				console.log("form submit");
+				const password_salt = crypto.createHash('sha512');
+				password_salt.update(uuid());
+				const password_hash = crypto.createHash('sha512');
+				password_hash.update(req.body.password+passwordPepper+password_salt);
+				let newUser = userModel.build(
+				{
+				first_name: req.body.first_name,
+				last_name: req.body.last_name,
+				email: req.body.email,
+				password_salt: password_salt.digest('hex'),
+				password_hash: password_hash.digest('hex')
+				}
+				);
+				await newUser.save();
+				res.redirect("/");
+				}
+				catch(ex) {
+				res.render('error', {message: 'Error connecting to MySQL'});
+				console.log("Error connecting to MySQL");
+				console.log(ex);
+				}
+				});
+
 	router.get('/deleteUser', async (req, res) => {
 		try {
 		console.log("delete user");
@@ -168,5 +215,29 @@ router.get('/', async (req, res) => {
 		console.log(ex);
 		}
 		});
+
+		router.get('/showPets', async (req, res) => {
+			console.log("page hit");
+			try {
+			let userId = req.query.id;
+			const user = await userModel.findByPk(userId);
+			if (user === null) {
+			res.render('error', {message: 'Error connecting to MySQL'});
+			console.log("Error connecting to userModel");
+			}
+			else {
+			let pets = await user.getPets();
+			console.log(pets);
+			let owner = await pets[0].getOwner();
+			console.log(owner);
+			res.render('pets', {allPets: pets});
+			}
+			}
+			catch(ex) {
+			res.render('error', {message: 'Error connecting to MySQL'});
+			console.log("Error connecting to MySQL");
+			console.log(ex);
+			}
+			});
 
 module.exports = router;
